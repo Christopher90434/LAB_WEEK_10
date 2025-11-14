@@ -1,6 +1,7 @@
 package com.example.lab_week_10
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (savedInstanceState == null) {
+            Log.d("MainActivity", "Creating new Fragment")
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, FirstFragment.newInstance())
+                .commit()
+        } else {
+            Log.d("MainActivity", "Fragment already exists (rotation)")
+        }
+
         prepareViewModel()
     }
 
@@ -25,10 +35,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun prepareViewModel(){
-        updateText(viewModel.total)
+        viewModel.total.observe(this) {
+            Log.d("MainActivity", "Total updated: $it")
+            updateText(it)
+        }
 
         findViewById<Button>(R.id.button_increment).setOnClickListener {
-            updateText(viewModel.incrementTotal())
+            viewModel.incrementTotal()
         }
     }
 }
